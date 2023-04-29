@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:property_app/Views/login_view.dart';
 
 import 'Core/color1.dart';
 
@@ -15,11 +16,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.light,
       theme: ThemeData(
-        primarySwatch: Color1.primaryColor,
+        scaffoldBackgroundColor: Color1.white,
+       // primarySwatch: Color1.primaryColor,
       ),
-      home: Scaffold(
-        appBar: AppBar(),
-      ),
+      home: const LoginView(),
     );
   }
 }
