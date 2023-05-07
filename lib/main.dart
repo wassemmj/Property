@@ -1,10 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:property_app/Views/login_view.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:property_app/Views/LoginView/login_view.dart';
+import 'package:property_app/logic/login_cubit/login_cubit.dart';
 
 import 'Core/color1.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => LoginCubit(),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -17,7 +28,7 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.light,
       theme: ThemeData(
         scaffoldBackgroundColor: Color1.white,
-       // primarySwatch: Color1.primaryColor,
+        // primarySwatch: Color1.primaryColor,
       ),
       home: const LoginView(),
     );

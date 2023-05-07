@@ -42,6 +42,7 @@ dependencies:
   flutter_rating_bar:
   google_fonts:
   go_router:
+  equatable:
 
 
 dev_dependencies:
