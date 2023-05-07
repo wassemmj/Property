@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:property_app/Core/color1.dart';
+import 'package:property_app/logic/login_cubit/login_cubit.dart';
 import 'package:property_app/views/loginView/Widget/login_buuton1.dart';
 import 'package:property_app/views/loginView/Widget/login_text_form_field.dart';
 import 'package:property_app/views/loginView/Widget/login_title.dart';
 
+import '../../data/api/login_api.dart';
 import 'Widget/login_button.dart';
 import 'Widget/login_image.dart';
 
@@ -21,9 +24,10 @@ class _LoginViewState extends State<LoginView> {
 
   final _formKey = GlobalKey<FormState>();
 
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  final emailController = TextEditingController(text: 'wassem@gmail.com');
+  final passwordController = TextEditingController(text: '123456789v!');
   final coPasswordController = TextEditingController();
+  final nameController = TextEditingController();
 
   /* notes :)
   1 is login
@@ -47,13 +51,30 @@ class _LoginViewState extends State<LoginView> {
                   const LoginTitle(),
                   const SizedBox(height: 25),
                   optionPartFunction(),
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 40),
+                  index == 2
+                      ? LoginTextFormField(
+                          label: 'name',
+                          hint: 'Enter name',
+                          controller: nameController,
+                          keyboardType: TextInputType.name,
+                          obscure: false,
+                          password: false,
+                          bb: () {},
+                          valid: (val) {
+                            if(val!.isEmpty) {
+                              return 'name is required';
+                            }
+                          },
+                        )
+                      : Container(),
+                  const SizedBox(height: 25),
                   LoginTextFormField(
                     label: 'Email',
                     hint: 'Enter Email',
                     controller: emailController,
                     keyboardType: TextInputType.emailAddress,
-                    obscure: true,
+                    obscure: false,
                     password: false,
                     bb: () {},
                     valid: (val) {
@@ -118,7 +139,11 @@ class _LoginViewState extends State<LoginView> {
                           ],
                         )
                       : Container(),
-                  LoginButton1(formKey: _formKey, index: index, onPressed: () {}),
+                  LoginButton1(
+                      formKey: _formKey,
+                      index: index,
+                      onPressed: onPressedLogin,
+                  ),
                   const SizedBox(height: 15),
                 ],
               ),
@@ -129,20 +154,34 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  onPressed() {
+  onPressedLogin() async {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(
-                index == 1 ? 'LogIn Successfully' : 'Register Successfully')),
-      );
-      _formKey.currentState!.reset();
-      emailController.clear();
-      passwordController.clear();
-      coPasswordController.clear();
+      LoginCubit loginCubit = BlocProvider.of<LoginCubit>(context);
+      if(index==2) {
+        await loginCubit.postSignup(nameController.text,emailController.text,passwordController.text,coPasswordController.text);
+      }
+      else if(index==1) {
+        await loginCubit.postLogin(emailController.text, passwordController.text);
+      }
+      if (loginCubit.done!) {
+        // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomeView()));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('done Successfully')));
+      } else {
+        if (LoginApi.message == null || LoginApi.message == '') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('password is wrong'),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(LoginApi.message!)));
+        }
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('an error occurred')),
+        const SnackBar(content: Text('all category is required to add correctly')),
       );
     }
   }
