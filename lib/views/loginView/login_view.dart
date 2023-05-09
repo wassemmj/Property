@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:property_app/Core/color1.dart';
 import 'package:property_app/logic/login_cubit/login_cubit.dart';
+import 'package:property_app/views/exploreView/explore_view.dart';
 import 'package:property_app/views/loginView/Widget/login_buuton1.dart';
 import 'package:property_app/views/loginView/Widget/login_text_form_field.dart';
 import 'package:property_app/views/loginView/Widget/login_title.dart';
+import 'package:property_app/views/showMoreView/show_more_view.dart';
 
 import '../../data/api/login_api.dart';
 import 'Widget/login_button.dart';
@@ -164,7 +166,7 @@ class _LoginViewState extends State<LoginView> {
         await loginCubit.postLogin(emailController.text, passwordController.text);
       }
       if (loginCubit.done!) {
-        // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomeView()));
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const ExploreView()));
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text('done Successfully')));
       } else {
