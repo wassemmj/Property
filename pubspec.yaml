@@ -43,7 +43,8 @@ dependencies:
   google_fonts:
   go_router:
   equatable:
-
+  google_nav_bar: ^5.0.6
+  line_icons: ^2.0.0
 
 dev_dependencies:
   flutter_test:
