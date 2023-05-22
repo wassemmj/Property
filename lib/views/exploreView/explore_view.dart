@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:property_app/views/exploreView/widget/explore_first_Item.dart';
 import 'package:property_app/views/exploreView/widget/explore_last_item.dart';
-import 'package:property_app/views/showMoreView/show_more_view.dart';
 
 import '../../Core/color1.dart';
 import '../../Core/style.dart';
 
 class ExploreView extends StatelessWidget {
-  const ExploreView({Key? key}) : super(key: key);
+  const ExploreView({Key? key,required this.from}) : super(key: key);
+
+  final bool from;
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +18,16 @@ class ExploreView extends StatelessWidget {
           'Explore'.toUpperCase(),
           style: Style.textStyle22,
         ),
+        leading: from? IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Color1.primaryColor,
+            size: 28,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ):null,
         backgroundColor: Color1.white,
         elevation: 0,
         centerTitle: true,
