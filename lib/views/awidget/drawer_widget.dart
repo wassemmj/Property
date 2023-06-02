@@ -22,13 +22,14 @@ class DrawerWidget extends StatelessWidget {
             Text(
               text,
               style: Style.textStyle18.copyWith(
-                color: Colors.black54,
+                color: Color1.black,
+                fontWeight: FontWeight.w200
               ),
             ),
             Icon(
               icon,
               size: 25,
-              color: Color1.primaryColor.withOpacity(0.7),
+              color: Color1.primaryColor.withOpacity(1),
             )
           ],
         ),

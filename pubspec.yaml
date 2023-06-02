@@ -45,6 +45,8 @@ dependencies:
   equatable:
   google_nav_bar: ^5.0.6
   line_icons: ^2.0.0
+  image_picker:
+  intl_phone_field:
 
 dev_dependencies:
   flutter_test:

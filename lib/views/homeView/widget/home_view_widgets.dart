@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:property_app/core/style.dart';
 import 'package:property_app/views/awidget/main_drawer.dart';
 import 'package:property_app/views/exploreView/explore_view.dart';
 import 'package:property_app/views/showMoreView/show_more_view.dart';
@@ -30,20 +31,20 @@ class HomeViewWidgets extends StatelessWidget {
               const SizedBox(
                 height: 10,
               ),
-              const Text(
+              Text(
                 'Our Promise',
-                style: TextStyle(color: Color1.primaryColor, fontSize: 16),
+                style: Style.textStyle16.copyWith(color: Color1.primaryColor),
               ),
               const SizedBox(
                 height: 15,
               ),
-              const Text(
+              Text(
                 'The perfect choice for ',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+                style: Style.textStyle22.copyWith(fontSize: 24, fontWeight: FontWeight.w500,color: Color1.black)
               ),
-              const Text(
+              Text(
                 'The future ',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+                  style: Style.textStyle22.copyWith(fontSize: 24, fontWeight: FontWeight.w500,color: Color1.black)
               ),
               const SizedBox(
                 height: 5,

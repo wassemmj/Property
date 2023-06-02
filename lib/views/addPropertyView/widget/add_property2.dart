@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:property_app/views/addPropertyView/widget/add_property_check_box.dart';
 import 'package:property_app/views/addPropertyView/widget/add_property_count.dart';
 
-class AddProperty2 extends StatefulWidget {
-  const AddProperty2({Key? key}) : super(key: key);
+import '../../../Core/color1.dart';
 
+class AddProperty2 extends StatefulWidget {
+  const AddProperty2({Key? key, required this.indexz}) : super(key: key);
+
+  final Function() indexz;
   @override
   State<AddProperty2> createState() => _AddProperty2State();
 }
@@ -24,6 +27,7 @@ class _AddProperty2State extends State<AddProperty2> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AddPropertyCount(
           text: 'Floor',
@@ -35,10 +39,12 @@ class _AddProperty2State extends State<AddProperty2> {
           },
           onPressed2: () {
             setState(() {
-              if (floorCount == 0) {
+              if (floorCount <= 0) {
                 floorCount = 0;
               }
-              floorCount--;
+              else {
+                floorCount--;
+              }
             });
           },
         ),
@@ -54,8 +60,9 @@ class _AddProperty2State extends State<AddProperty2> {
             setState(() {
               if (bathCount == 0) {
                 bathCount = 0;
+              } else {
+                bathCount--;
               }
-              bathCount--;
             });
           },
         ),
@@ -71,8 +78,9 @@ class _AddProperty2State extends State<AddProperty2> {
             setState(() {
               if (roomCount == 0) {
                 roomCount = 0;
+              }else {
+                roomCount--;
               }
-              roomCount--;
             });
           },
         ),
@@ -106,6 +114,14 @@ class _AddProperty2State extends State<AddProperty2> {
           value: fireAlert,
           onPressed: (val) => setState(() => fireAlert = val!),
         ),
+        const SizedBox(height: 237),
+        FloatingActionButton(
+          onPressed: widget.indexz,
+          backgroundColor: Color1.primaryColor.withOpacity(0.7),
+          child: const Icon(
+             Icons.arrow_back,
+            color: Color1.white,
+          ),)
       ],
     );
   }
