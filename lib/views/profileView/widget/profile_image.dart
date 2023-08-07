@@ -44,7 +44,7 @@ class _ProfileImageState extends State<ProfileImage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 100),
+                SizedBox(height: MediaQuery.of(context).size.height/8.67),
                 Container(
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,

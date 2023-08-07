@@ -48,7 +48,7 @@ class _MyPropertyViewState extends State<MyPropertyView> {
                   itemCount: 1,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
-                    return const ShowMoreCard();
+                    return const ShowMoreCard(location: '878', id: 1,);
                   }),
             )
                 : const Center(

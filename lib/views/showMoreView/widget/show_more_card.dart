@@ -1,52 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:property_app/Core/color1.dart';
-import 'package:property_app/Core/style.dart';
 import 'package:property_app/views/showMoreView/widget/show_more_image.dart';
 import 'package:property_app/views/showMoreView/widget/show_more_row.dart';
 
 import '../../PropertyDetailsView/property_details_view.dart';
 
 class ShowMoreCard extends StatelessWidget {
-  const ShowMoreCard({Key? key}) : super(key: key);
+  const ShowMoreCard({Key? key, required this.location, required this.id}) : super(key: key);
+
+  final String location;
+  final int id;
 
   @override
   Widget build(BuildContext context) {
+    int height = MediaQuery.of(context).size.height.toInt();
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (_)=> const PropertyDetailsView()));
+        Navigator.of(context).push(MaterialPageRoute(builder: (_)=> PropertyDetailsView(id: id)));
       },
       child: Stack(
         children: [
           Container(
-            height: 240,
+            height: (height/3.6).floorToDouble(),
             margin: const EdgeInsets.all(5),
             child: Column(
               children: [
                 Expanded(
                   flex: 2,
                   child: Stack(
-                    children: [
-                      const ShowMoreImage(),
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20,vertical: 10),
-                          margin: EdgeInsets.symmetric(vertical: 2),
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.only(topLeft: Radius.circular(25),bottomLeft: Radius.circular(25)),
-                            color: Colors.white54,
-                          ),
-                          child: Text(
-                            'Q2 Apartment',
-                            style: Style.textStyle22.copyWith(color: Color1.primaryColor.withOpacity(0.7)),
-                          ),
-                        ),
-                      ),
+                    children: const [
+                      ShowMoreImage(),
                     ],
                   ),
                 ),
                 Expanded(
-                  flex: 1,
                   child: Container(
                     padding: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
@@ -62,18 +49,20 @@ class ShowMoreCard extends StatelessWidget {
                             ShowMoreRow(
                               icon: Icons.location_on,
                               color: Color1.primaryColor.withOpacity(0.8),
-                              text: 'Malki,15 Street',
-                              size: 18,
+                              text: location,
+                              size: (height/48).floorToDouble(),
                             ),
-                            const ShowMoreRow(
+                            ShowMoreRow(
+                              icon: Icons.monetization_on_outlined,
+                              color: const Color.fromRGBO(80, 82, 82, 0.7),
+                              text: '500 M',
+                              size: (height/48).floorToDouble(),
+                            ),
+                            ShowMoreRow(
                               icon: Icons.star,
                               color: Colors.yellow,
                               text: '4.8 /5',
-                              size: 18,
-                            ),
-                            const Text(
-                              'Price: 5000\$',
-                              style: Style.textStyle16,
+                              size: (height/48).floorToDouble(),
                             ),
                           ],
                         ),

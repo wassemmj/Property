@@ -11,41 +11,40 @@ class PropertyDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(7),
-        margin: const EdgeInsets.all(8),
-        width: 170,
-        height: 70,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          color: Colors.white24,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Icon(
-              icon,
-              size: 30,
-              color: Color1.white,
-            ),
-            Text(
-              text,
-              style: Style.textStyle20.copyWith(color: Color1.white),
-            ),
-            Container(
-              width: 20,
-              height: 20,
-              decoration: const BoxDecoration(shape: BoxShape.circle, color: Color1.white),
-              child: Center(
-                child: Text(
-                  '$number',
-                  style: Style.textStyle18.copyWith(fontWeight: FontWeight.w400),
-                ),
+    return Container(
+      padding: const EdgeInsets.all(7),
+      margin: const EdgeInsets.all(8),
+      width: number==0 ? text.length > 16 ? 160:150:text.length > 16 ? 188: 183,
+      height: 70,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        color: Colors.white24,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          number!=0 ? Icon(
+            icon,
+            size: 30,
+            color: Color1.white,
+          ):Container(),
+          Text(
+            text,
+            style: text.length > 16 ? Style.textStyle16.copyWith(color: Color1.white):Style.textStyle18.copyWith(color: Color1.white),
+          ),
+          number!=0 ? Container(
+            width: 30,
+            height: 30,
+            decoration: const BoxDecoration(shape: BoxShape.circle, color: Color1.white),
+            child: Center(
+              child: Text(
+                '$number',
+                textAlign: TextAlign.center,
+                style: number.bitLength>3 ? Style.textStyle16.copyWith(fontWeight: FontWeight.w400,fontSize: 12):Style.textStyle16.copyWith(fontWeight: FontWeight.w400),
               ),
             ),
-          ],
-        ),
+          ):Container(),
+        ],
       ),
     );
   }

@@ -17,6 +17,8 @@ class _FavViewState extends State<FavView> {
 
   @override
   Widget build(BuildContext context) {
+    int height = MediaQuery.of(context).size.height.toInt();
+    int width = MediaQuery.of(context).size.width.toInt();
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -26,13 +28,13 @@ class _FavViewState extends State<FavView> {
               child: Text(
                 'Favorite Property',
                 style: Style.textStyle22
-                    .copyWith(fontSize: 25, fontWeight: FontWeight.w500),
+                    .copyWith(fontSize: (height/34.3).floorToDouble(), fontWeight: FontWeight.w500),
               ),
             ),
             fav.isNotEmpty
                 ? Container()
-                : const SizedBox(
-                    height: 350,
+                : SizedBox(
+                    height: (height/2.477).floorToDouble(),
                   ),
             fav.isNotEmpty
                 ? Padding(
@@ -42,7 +44,7 @@ class _FavViewState extends State<FavView> {
                         itemCount: 1,
                         shrinkWrap: true,
                         itemBuilder: (context, index) {
-                          return const ShowMoreCard();
+                          return const ShowMoreCard(location: '5454', id: 1,);
                         }),
                   )
                 : const Center(

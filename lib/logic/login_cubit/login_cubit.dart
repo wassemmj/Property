@@ -1,7 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:property_app/core/token.dart';
 import 'package:property_app/data/repo/login_repo.dart';
 
+import '../../core/id.dart';
 import '../../data/Model/login_model.dart';
 
 part 'login_state.dart';
@@ -16,8 +18,8 @@ class LoginCubit extends Cubit<LoginState> {
     done = false;
     try {
       var loginModel = await LoginRepo.login(email, password);
-      token = loginModel['token'];
-      print(loginModel['user']);
+      Token.token = loginModel['token'];
+      Id.id = loginModel['user']['id'];
       done = true;
       emit(state.copyWith(
           status: LoginStatus.success,
@@ -38,8 +40,8 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       var signupModel =
           await LoginRepo.signup(name, email, password, coPassword);
-      token = signupModel['token'];
-      print(signupModel['user']);
+      Token.token = signupModel['token'];
+      Id.id = signupModel['user']['id'];
       done = true;
       emit(state.copyWith(
           status: LoginStatus.success,

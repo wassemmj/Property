@@ -14,6 +14,7 @@ class ShowMoreRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    int width = MediaQuery.of(context).size.width.toInt();
     return Row(
       children: [
         Icon(
@@ -21,7 +22,7 @@ class ShowMoreRow extends StatelessWidget {
           size: size,
           color: color,
         ),
-        const SizedBox(width: 2),
+        SizedBox(width: (width/137).floorToDouble()),
         ShowMoreText1(text: text, style: Style.textStyle16),
       ],
     );

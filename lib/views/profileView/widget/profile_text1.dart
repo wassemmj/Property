@@ -19,7 +19,7 @@ class ProfileText1 extends StatelessWidget {
           style: Style.textStyle22.copyWith(
               fontWeight: FontWeight.w400, color: Color1.primaryColor),
         ),
-        const SizedBox(width: 15),
+        SizedBox(width: MediaQuery.of(context).size.width / 27.4),
         Text(
           ans,
           style: Style.textStyle18.copyWith(

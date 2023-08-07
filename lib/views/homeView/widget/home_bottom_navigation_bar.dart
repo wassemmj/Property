@@ -33,7 +33,7 @@ class _HomeBottomNavigationBarState extends State<HomeBottomNavigationBar> {
         'body': const FavView()
       },
       {
-        'body': const ProfileView(),
+        'body': const ProfileView(id: 0, home: true,),
       },
     ];
     return Scaffold(

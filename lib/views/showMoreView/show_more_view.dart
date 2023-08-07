@@ -32,7 +32,7 @@ class ShowMoreView extends StatelessWidget {
         itemCount: 2,
         shrinkWrap: true,
         itemBuilder: (context, index) {
-          return const ShowMoreCard();
+          return const ShowMoreCard(location: '5468', id: 1,);
         },
       ),
     );

@@ -48,7 +48,7 @@ class _WaitingViewState extends State<WaitingView> {
                   itemCount: 1,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
-                    return const ShowMoreCard();
+                    return const ShowMoreCard(location: '554', id: 1,);
                   }),
             )
                 : const Center(

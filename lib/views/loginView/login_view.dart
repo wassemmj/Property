@@ -188,6 +188,8 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Widget optionPartFunction() {
+    int height = MediaQuery.of(context).size.height.toInt();
+    int width = MediaQuery.of(context).size.width.toInt();
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
