@@ -22,7 +22,7 @@ class ExploreFirstItem extends StatelessWidget {
                 image: DecorationImage(
                   fit: BoxFit.fitWidth,
                   image: AssetImage(
-                      'assets/images/apartment.jpg'),
+                      'assets/images/img.png'),
                 ),
               ),
             ),

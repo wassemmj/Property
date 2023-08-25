@@ -22,18 +22,6 @@ class _ShowMoreImageState extends State<ShowMoreImage> {
             ),
           ),
         ),
-        IconButton(
-          icon: Icon(
-            fav ? Icons.favorite : Icons.favorite_border,
-            color: Colors.red,
-            size: 28,
-          ),
-          onPressed: () {
-            setState(() {
-              fav = !fav;
-            });
-          },
-        ),
       ],
     );
   }

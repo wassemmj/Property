@@ -4,7 +4,9 @@ import 'package:property_app/core/style.dart';
 import 'package:property_app/views/showMoreView/widget/show_more_card.dart';
 
 class ShowMoreView extends StatelessWidget {
-  const ShowMoreView({Key? key}) : super(key: key);
+  const ShowMoreView({Key? key, required this.l}) : super(key: key);
+
+  final List l;
 
   @override
   Widget build(BuildContext context) {
@@ -28,12 +30,25 @@ class ShowMoreView extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
       ),
-      body: ListView.builder(
-        itemCount: 2,
-        shrinkWrap: true,
-        itemBuilder: (context, index) {
-          return const ShowMoreCard(location: '5468', id: 1,);
-        },
+      body: Builder(
+        builder: (context) {
+          return ListView.builder(
+            itemCount:  l.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              var ll = l[index];
+              var p = ll['advert']['advertable'];
+              return ShowMoreCard(
+                location: '${ll['location']['country']} , ${ll['location']['city']} ',
+                id: ll['id']??0,
+                price: ll['advert']['advertable_type']=='App\\Models\\Rent'? '${p['price_per_day']} per day':'${p['total_price']} ',
+                rent: ll['advert']['advertable_type']=='App\\Models\\Rent'? true:false,
+                space: '${ll['space']} M',
+                // image: ll['image'],
+              );
+            },
+          );
+        }
       ),
     );
   }

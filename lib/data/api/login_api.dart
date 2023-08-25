@@ -17,8 +17,10 @@ class LoginApi {
         body: {
           'email': email,
           'password': password,
+          "type":"user",
         },
       );
+      print(response.body);
       if(response.statusCode != 200) {
         var j = jsonDecode(response.body);
         message = j["message"];
@@ -27,6 +29,27 @@ class LoginApi {
         if(response.body.isEmpty) {
           throw Exception('empty');
         }
+        return response.body;
+      }
+    } catch(error) {
+      rethrow;
+    }
+  }
+
+  static Future logout() async {
+    message = '';
+    try {
+      var response = await http.post(
+        Uri.parse('${Api.apiServer}/login'),
+        headers: {
+          'Accept':'application/json',
+        },
+      );
+      if(response.statusCode != 204) {
+        var j = jsonDecode(response.body);
+        message = j["message"];
+        throw Exception('error occurred');
+      } else {
         return response.body;
       }
     } catch(error) {

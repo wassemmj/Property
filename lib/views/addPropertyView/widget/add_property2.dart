@@ -85,43 +85,35 @@ class _AddProperty2State extends State<AddProperty2> {
           },
         ),
         AddPropertyCheckBox(
-          text: 'Heat',
-          value: heat,
-          onPressed: (val) => setState(() => heat = val!),
-        ),
-        AddPropertyCheckBox(
           text: 'Air Condition',
           value: airCondition,
+          color: Color1.black,
           onPressed: (val) => setState(() => airCondition = val!),
         ),
         AddPropertyCheckBox(
           text: 'Solar Power',
+          color: Color1.black,
           value: solarPower,
           onPressed: (val) => setState(() => solarPower = val!),
         ),
         AddPropertyCheckBox(
           text: 'Garage',
+          color: Color1.black,
           value: garage,
           onPressed: (val) => setState(() => garage = val!),
         ),
         AddPropertyCheckBox(
           text: 'Camera',
+          color: Color1.black,
           value: camera,
           onPressed: (val) => setState(() => camera = val!),
         ),
         AddPropertyCheckBox(
           text: 'Fire Alert',
           value: fireAlert,
+          color: Color1.black,
           onPressed: (val) => setState(() => fireAlert = val!),
         ),
-        const SizedBox(height: 237),
-        FloatingActionButton(
-          onPressed: widget.indexz,
-          backgroundColor: Color1.primaryColor.withOpacity(0.7),
-          child: const Icon(
-             Icons.arrow_back,
-            color: Color1.white,
-          ),)
       ],
     );
   }

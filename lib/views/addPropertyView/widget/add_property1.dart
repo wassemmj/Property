@@ -24,12 +24,14 @@ class _AddProperty1State extends State<AddProperty1> {
 
   double val = 0;
 
+  var location ;
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const AddPropertyTextField(name: 'Building Name  ', num: false),
-        const AddPropertyTextField(name: 'Property Number  ', num: true),
+        // const AddPropertyTextField(name: 'Building Name  ', num: false),
+        // const AddPropertyTextField(name: 'Property Number  ', num: true),
         TextFormField(
           maxLength: 100,
           maxLines: 3,
@@ -49,8 +51,9 @@ class _AddProperty1State extends State<AddProperty1> {
           ),
           cursorColor: Color1.primaryColor,
         ),
-        const AddPropertyLocation(
+        AddPropertyLocation(
           add: true,
+          location: location,
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,9 +121,9 @@ class _AddProperty1State extends State<AddProperty1> {
                 });
               },
               iconEnabledColor: Color1.primaryColor,
-            )
+            ),
           ],
-        )
+        ),
       ],
     );
   }

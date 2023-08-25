@@ -9,7 +9,7 @@ class PropertyModel {
   int floorNumber;
   String buildingName;
   bool shared;
-  bool isHeatControl;
+  bool owner;
   bool airConditioning;
   bool fireplace;
   bool ventilationSystem;
@@ -39,7 +39,6 @@ class PropertyModel {
   String delivareTime;
   int pricePerDay;
   bool purchase;
-  int totalPrice;
   int pricePerMeter;
 
   PropertyModel({
@@ -53,7 +52,7 @@ class PropertyModel {
     required this.floorNumber,
     required this.buildingName,
     required this.shared,
-    required this.isHeatControl,
+    required this.owner,
     required this.airConditioning,
     required this.fireplace,
     required this.ventilationSystem,
@@ -83,7 +82,6 @@ class PropertyModel {
     required this.delivareTime,
     required this.pricePerDay,
     required this.purchase,
-    required this.totalPrice,
     required this.pricePerMeter,
   });
 
@@ -98,7 +96,7 @@ class PropertyModel {
         floorNumber: 0,
         buildingName: '',
         shared: false,
-        isHeatControl: false,
+        owner: false,
         airConditioning: false,
         fireplace: false,
         ventilationSystem: false,
@@ -128,7 +126,6 @@ class PropertyModel {
         delivareTime: '',
         pricePerDay: 0,
         purchase: false,
-        totalPrice: 0,
         pricePerMeter: 0,
       );
 
@@ -144,7 +141,7 @@ class PropertyModel {
       floorNumber: json['floor_number'],
       buildingName: json['building_name'],
       shared: json['shared'],
-      isHeatControl: json['isHeatControl'],
+      owner: json['isHeatControl'],
       airConditioning: json['air_condtioning'],
       fireplace: json['fireplace'],
       ventilationSystem: json['ventilation_system'],
@@ -174,7 +171,6 @@ class PropertyModel {
       delivareTime: json['delivare_time'],
       pricePerDay: json['price_per_day'],
       purchase: json['Purchase'],
-      totalPrice: json['total_price'],
       pricePerMeter: json['price_per_meter'],
     );
   }
@@ -191,7 +187,7 @@ class PropertyModel {
     data['floor_number'] = floorNumber;
     data['building_name'] = buildingName;
     data['shared'] = shared;
-    data['isHeatControl'] = isHeatControl;
+    data['isHeatControl'] = owner;
     data['air_condtioning'] = airConditioning;
     data['fireplace'] = fireplace;
     data['ventilation_system'] = ventilationSystem;
@@ -221,7 +217,6 @@ class PropertyModel {
     data['delivare_time'] = delivareTime;
     data['price_per_day'] = pricePerDay;
     data['Purchase'] = purchase;
-    data['total_price'] = totalPrice;
     data['price_per_meter'] = pricePerMeter;
     return data;
   }

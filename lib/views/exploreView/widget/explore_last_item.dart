@@ -9,7 +9,7 @@ class ExploreLastItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ShowMoreView(),)),
+      onTap: () {},
       child: Container(
         width: 100,
         margin: const EdgeInsets.all(5),

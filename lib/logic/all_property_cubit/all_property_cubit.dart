@@ -21,10 +21,36 @@ class AllPropertyCubit extends Cubit<AllPropertyState> {
     }
   }
 
+  Future catProperty(String catName) async {
+    emit(state.copyWith(status: AllPropertyStatus.loading));
+    try {
+      property!.clear();
+      property = await AllPropertyRepo.catProperty(catName);
+      print(property);
+      emit(state.copyWith(status: AllPropertyStatus.success));
+    } catch(error) {
+      emit(state.copyWith(status: AllPropertyStatus.error));
+    }
+  }
+
   Future catt() async {
     emit(state.copyWith(status: AllPropertyStatus.loading));
     try {
       category = await AllPropertyRepo.cat();
+      print(category);
+      emit(state.copyWith(status: AllPropertyStatus.success));
+    } catch(error) {
+      emit(state.copyWith(status: AllPropertyStatus.error));
+    }
+  }
+
+  Future cattt(String name) async {
+    emit(state.copyWith(status: AllPropertyStatus.loading));
+    try {
+      property!.clear();
+      types = await AllPropertyRepo.type(name);
+      print(types);
+      property= await AllPropertyRepo.catProperty(name);
       print(category);
       emit(state.copyWith(status: AllPropertyStatus.success));
     } catch(error) {
@@ -37,7 +63,19 @@ class AllPropertyCubit extends Cubit<AllPropertyState> {
     try {
       category = await AllPropertyRepo.cat();
       types = await AllPropertyRepo.type(category![0]['name']);
-      property = await AllPropertyRepo.allProperty();
+      print(types);
+      property= await AllPropertyRepo.catProperty(category![0]['name']);
+      print(property);
+      emit(state.copyWith(status: AllPropertyStatus.success));
+    } catch(error) {
+      emit(state.copyWith(status: AllPropertyStatus.error));
+    }
+  }
+
+  Future catType() async {
+    emit(state.copyWith(status: AllPropertyStatus.loading));
+    try {
+      category = await AllPropertyRepo.cat();
       emit(state.copyWith(status: AllPropertyStatus.success));
     } catch(error) {
       emit(state.copyWith(status: AllPropertyStatus.error));
@@ -48,7 +86,6 @@ class AllPropertyCubit extends Cubit<AllPropertyState> {
     emit(state.copyWith(status: AllPropertyStatus.loading));
     try {
       types = await AllPropertyRepo.type(name);
-      print(category);
       emit(state.copyWith(status: AllPropertyStatus.success));
     } catch(error) {
       emit(state.copyWith(status: AllPropertyStatus.error));

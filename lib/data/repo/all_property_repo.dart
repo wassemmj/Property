@@ -12,6 +12,15 @@ class AllPropertyRepo {
     }
   }
 
+  static Future catProperty(String catName) async {
+    try {
+      var response = await AllPropertyApi.catProperty(catName);
+      return jsonDecode(response);
+    } catch(error) {
+      throw Exception('error in repo');
+    }
+  }
+
   static Future cat() async {
     try {
       var response = await AllPropertyApi.cat();

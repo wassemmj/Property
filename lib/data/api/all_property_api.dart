@@ -7,7 +7,7 @@ class AllPropertyApi {
   static Future allPropertyAuth() async {
     try {
       var response = await http.post(
-        Uri.parse('${Api.apiServer}/user/allProperty'),
+        Uri.parse('${Api.apiServer}/user/getAllProperties'),
         headers: {
           'Accept':'application/json',
           'Authorization': 'Bearer ${Token.token}'
@@ -17,6 +17,32 @@ class AllPropertyApi {
         if(response.body.isEmpty) {
           throw Exception('empty');
         }
+        return response.body;
+      } else {
+        throw Exception('error occurred');
+      }
+    } catch(error) {
+      rethrow;
+    }
+  }
+
+  static Future catProperty(String catName) async {
+    try {
+      var response = await http.post(
+        Uri.parse('${Api.apiServer}/user/getCategoryProperty'),
+        headers: {
+          'Accept':'application/json',
+          'Authorization': 'Bearer ${Token.token}'
+        },
+        body: {
+          "category_name": catName,
+        }
+      );
+      if(response.statusCode == 200) {
+        if(response.body.isEmpty) {
+          throw Exception('empty');
+        }
+        print(response.body);
         return response.body;
       } else {
         throw Exception('error occurred');

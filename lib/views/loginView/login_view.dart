@@ -26,7 +26,7 @@ class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
 
   final emailController = TextEditingController(text: 'wassem@gmail.com');
-  final passwordController = TextEditingController(text: '123456789v!');
+  final passwordController = TextEditingController(text: '123456789@w');
   final coPasswordController = TextEditingController();
   final nameController = TextEditingController();
 

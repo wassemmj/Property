@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:property_app/Core/color1.dart';
+import 'package:property_app/core/id.dart';
 import 'package:property_app/views/exploreView/explore_view.dart';
 import '../../favView/fav_view.dart';
 import '../../profileView/profile_view.dart';
@@ -33,7 +34,7 @@ class _HomeBottomNavigationBarState extends State<HomeBottomNavigationBar> {
         'body': const FavView()
       },
       {
-        'body': const ProfileView(id: 0, home: true,),
+        'body': ProfileView(id: Id.id, home: true),
       },
     ];
     return Scaffold(

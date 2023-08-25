@@ -9,10 +9,12 @@ part 'create_property_state.dart';
 class CreatePropertyCubit extends Cubit<CreatePropertyState> {
   CreatePropertyCubit() : super(CreatePropertyState.initial());
 
+  var proo;
+
   Future create(PropertyModel propertyModel) async {
     emit(state.copyWith(status: CreatePropertyStatus.loading));
     try {
-      await CreatePropertyRepo.create(propertyModel);
+      proo = await CreatePropertyRepo.create(propertyModel);
       emit(state.copyWith(status: CreatePropertyStatus.success));
     } catch(error) {
       emit(state.copyWith(status: CreatePropertyStatus.error));

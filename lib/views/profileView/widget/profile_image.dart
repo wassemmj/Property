@@ -1,7 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:property_app/logic/profile_cubit/profile_cubit.dart';
+import 'package:property_app/logic/profile_cubit/profile_cubit.dart';
 
 import '../../../Core/color1.dart';
 
@@ -35,7 +38,6 @@ class _ProfileImageState extends State<ProfileImage> {
               ],
               begin: Alignment.bottomCenter,
               end: Alignment.topCenter,
-
             ),
           ),
           child: Container(
@@ -44,65 +46,68 @@ class _ProfileImageState extends State<ProfileImage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(height: MediaQuery.of(context).size.height/8.67),
+                SizedBox(height: MediaQuery.of(context).size.height / 8.67),
                 Container(
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                   ),
-                  child: widget.edit? Stack(
-                    children: [
-                      ClipOval(
-                        child: SizedBox.fromSize(
-                          size: const Size.fromRadius(50),
-                          child: pickedImage == null
-                              ? Image.asset(
-                            'assets/images/i.png',
-                            fit: BoxFit.cover,
-                          )
-                              : Image.file(
-                            pickedImage!,
-                            fit: BoxFit.cover,
-                          ),
+                  child: widget.edit
+                      ? Stack(
+                          children: [
+                            ClipOval(
+                              child: SizedBox.fromSize(
+                                size: const Size.fromRadius(50),
+                                child: pickedImage == null
+                                    ? Image.asset(
+                                        'assets/images/i.png',
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Image.file(
+                                        pickedImage!,
+                                        fit: BoxFit.cover,
+                                      ),
+                              ),
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white38,
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: IconButton(
+                                onPressed: () async {
+                                  final ImagePicker picker = ImagePicker();
+                                  final XFile? image = await picker.pickImage(
+                                    source: ImageSource.camera,
+                                  );
+                                  if (image == null) {
+                                    return;
+                                  }
+                                  setState(() {
+                                    pickedImage = File(image.path);
+                                  });
+                                  await BlocProvider.of<ProfileCubit>(context)
+                                      .createImage(File(image.path),true);
+                                },
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Color1.primaryColor),
+                                ),
+                                icon: const Icon(
+                                  Icons.add,
+                                  color: Color1.primaryColor,
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      : ClipOval(
+                          child: SizedBox.fromSize(
+                              size: const Size.fromRadius(50),
+                              child: Image.asset(
+                                'assets/images/i.png',
+                                fit: BoxFit.cover,
+                              )),
                         ),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white38,
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        child: IconButton(
-                          onPressed: () async {
-                            final ImagePicker picker = ImagePicker();
-                            final XFile? image = await picker.pickImage(
-                              source: ImageSource.gallery,
-                            );
-                            if (image == null) {
-                              return;
-                            }
-                            setState(() {
-                              pickedImage = File(image.path);
-                            });
-                          },
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(
-                                Color1.primaryColor),
-                          ),
-                          icon: const Icon(
-                            Icons.add,
-                            color: Color1.primaryColor,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ):ClipOval(
-                    child: SizedBox.fromSize(
-                      size: const Size.fromRadius(50),
-                      child: Image.asset(
-                        'assets/images/i.png',
-                        fit: BoxFit.cover,
-                      )
-                    ),
-                  ),
                 ),
               ],
             ),

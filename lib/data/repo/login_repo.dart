@@ -20,4 +20,13 @@ class LoginRepo {
       throw Exception('error in repo');
     }
   }
+
+  static Future logout() async {
+    try {
+      var response = await LoginApi.logout();
+      return response;
+    } catch(error) {
+      throw Exception('error in repo');
+    }
+  }
 }

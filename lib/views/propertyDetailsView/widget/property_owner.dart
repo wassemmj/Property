@@ -4,12 +4,13 @@ import '../../../Core/color1.dart';
 import '../../../Core/style.dart';
 
 class PropertyOwner extends StatelessWidget {
-  const PropertyOwner({Key? key, required this.id, required this.name, required this.email, required this.phone, required this.f}) : super(key: key);
+  const PropertyOwner({Key? key, required this.id, required this.name, required this.email, required this.phone, required this.f, required this.color}) : super(key: key);
 
   final int id;
   final String name;
   final String email;
   final String phone;
+  final Color color;
   final Function() f;
 
   @override
@@ -21,7 +22,7 @@ class PropertyOwner extends StatelessWidget {
         margin: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          color: Colors.white24,
+          color: color,
         ),
         child: Row(
           children: [
@@ -49,7 +50,7 @@ class PropertyOwner extends StatelessWidget {
                 ),
                 Text(
                   email,
-                  style: Style.textStyle18
+                  style: Style.textStyle16
                       .copyWith(color: Color1.white),
                 ),
                 const SizedBox(

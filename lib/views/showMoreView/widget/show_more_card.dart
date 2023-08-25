@@ -3,33 +3,67 @@ import 'package:property_app/Core/color1.dart';
 import 'package:property_app/views/showMoreView/widget/show_more_image.dart';
 import 'package:property_app/views/showMoreView/widget/show_more_row.dart';
 
+import '../../../Core/api.dart';
 import '../../PropertyDetailsView/property_details_view.dart';
 
 class ShowMoreCard extends StatelessWidget {
-  const ShowMoreCard({Key? key, required this.location, required this.id}) : super(key: key);
+  const ShowMoreCard(
+      {Key? key,
+      required this.location,
+      required this.id,
+      required this.rent,
+      required this.price,
+      required this.space,
+      this.image})
+      : super(key: key);
 
   final String location;
   final int id;
+  final bool rent;
+  final String price;
+  final String space;
+  final String? image;
 
   @override
   Widget build(BuildContext context) {
     int height = MediaQuery.of(context).size.height.toInt();
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (_)=> PropertyDetailsView(id: id)));
+        Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => PropertyDetailsView(id: id)));
       },
       child: Stack(
         children: [
           Container(
-            height: (height/3.6).floorToDouble(),
+            height: (height / 3.6).floorToDouble(),
             margin: const EdgeInsets.all(5),
             child: Column(
               children: [
                 Expanded(
                   flex: 2,
                   child: Stack(
-                    children: const [
-                      ShowMoreImage(),
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          image: image == null
+                              ? id.isEven
+                                  ? (const DecorationImage(
+                                      fit: BoxFit.fill,
+                                      image: AssetImage(
+                                          'assets/images/img_8.png'),
+                                    ))
+                                  : (const DecorationImage(
+                                      fit: BoxFit.fill,
+                                      image: AssetImage(
+                                          'assets/images/img.png'),
+                                    ))
+                              : DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: NetworkImage(
+                                      '${Api.apiServer.substring(0, 25)}/${image?.substring(63)}'),
+                                ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -50,19 +84,19 @@ class ShowMoreCard extends StatelessWidget {
                               icon: Icons.location_on,
                               color: Color1.primaryColor.withOpacity(0.8),
                               text: location,
-                              size: (height/48).floorToDouble(),
+                              size: (height / 48).floorToDouble(),
+                            ),
+                            ShowMoreRow(
+                              icon: Icons.house,
+                              color: Color1.primaryColor,
+                              text: space,
+                              size: (height / 48).floorToDouble(),
                             ),
                             ShowMoreRow(
                               icon: Icons.monetization_on_outlined,
                               color: const Color.fromRGBO(80, 82, 82, 0.7),
-                              text: '500 M',
-                              size: (height/48).floorToDouble(),
-                            ),
-                            ShowMoreRow(
-                              icon: Icons.star,
-                              color: Colors.yellow,
-                              text: '4.8 /5',
-                              size: (height/48).floorToDouble(),
+                              text: price,
+                              size: (height / 48).floorToDouble(),
                             ),
                           ],
                         ),
@@ -77,8 +111,9 @@ class ShowMoreCard extends StatelessWidget {
             alignment: Alignment.topRight,
             child: Container(
               padding: const EdgeInsets.only(top: 55, right: 50),
-              child: const Banner(
-                message: 'Sale',
+              child: Banner(
+                color: rent ? Colors.green : Colors.redAccent,
+                message: rent ? 'rent' : 'Sale',
                 location: BannerLocation.bottomStart,
               ),
             ),
@@ -88,7 +123,6 @@ class ShowMoreCard extends StatelessWidget {
     );
   }
 }
-
 
 /*
 // return Container(

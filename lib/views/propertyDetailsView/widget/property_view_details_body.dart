@@ -1,15 +1,20 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart';
 import 'package:property_app/Core/color1.dart';
 import 'package:property_app/Core/style.dart';
 import 'package:property_app/logic/all_property_cubit/all_property_cubit.dart';
 import 'package:property_app/logic/detail_cubit/detail_cubit.dart';
+import 'package:property_app/logic/favorite_cubit/favorite_cubit.dart';
+import 'package:property_app/logic/property_image_cubit/property_image_cubit.dart';
 import 'package:property_app/logic/report_advert_cubit/report_advert_cubit.dart';
 import 'package:property_app/views/PropertyDetailsView/Widget/property_description.dart';
 import 'package:property_app/views/profileView/profile_view.dart';
 import 'package:property_app/views/propertyDetailsView/widget/property_owner.dart';
 import 'package:property_app/views/reportView/report_view.dart';
 
+import '../../../Core/api.dart';
 import '../../../logic/request_cubit/request_cubit.dart';
 
 class PropertyDetailsViewBody extends StatefulWidget {
@@ -24,14 +29,44 @@ class PropertyDetailsViewBody extends StatefulWidget {
 
 class _PropertyDetailsViewBodyState extends State<PropertyDetailsViewBody> {
   bool fav = false;
+  int aId = 0;
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       await BlocProvider.of<DetailCubit>(context, listen: false)
           .detail(widget.id);
+      await BlocProvider.of<PropertyImageCubit>(context, listen: false)
+          .getImage(widget.id);
+      aId = BlocProvider.of<DetailCubit>(context, listen: false).pro['advert']
+          ['id'];
     });
     super.initState();
+    getd();
+  }
+
+  getd() async {
+    await BlocProvider.of<FavoriteCubit>(context).getFav();
+    fav = BlocProvider.of<FavoriteCubit>(context).fav.any((expert) {
+      print(expert['id']);
+      return widget.id == expert['id'];
+    });
+  }
+
+  @override
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+    await BlocProvider.of<FavoriteCubit>(context).getFav();
+    // fav =  Provider.of<ApiProvider>(context, listen: false).isMealFavorites(id);
+    if (fav) {
+      setState(() {
+        fav = true;
+      });
+    } else {
+      setState(() {
+        fav = false;
+      });
+    }
   }
 
   @override
@@ -56,26 +91,54 @@ class _PropertyDetailsViewBodyState extends State<PropertyDetailsViewBody> {
                   )),
                 ],
               );
+            } else if (state.status == PropertyImageStatus.loading ||
+                state.status == PropertyImageStatus.initial) {
+              return Column(
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.5,
+                  ),
+                  const Center(
+                      child: CircularProgressIndicator(
+                    color: Color1.primaryColor,
+                    strokeWidth: 1,
+                  )),
+                ],
+              );
             } else {
               var ll = BlocProvider.of<DetailCubit>(context).pro;
-              var sec = ll['security_model'];
-              var lux = ll['luxery_model'];
-              var sup = ll['support_model'];
-              var ind = ll['industrial_model'];
-              var heat = ll['heat_control_model'];
-              var po = ll['property_owner'];
-              id = ll['property']['id'];
+              var image = BlocProvider.of<PropertyImageCubit>(context).image;
+              var sec = ll['property_security_model'];
+              var lux = ll['property_luxury_model'];
+              var sup = ll['property_supply'];
+              var ind = ll['property_industrial_support'];
+              var heat = ll['property__heat_model'];
+              var po = ll['user'];
+              id = ll['id'];
+              aId = ll['advert']['id'];
+              var a = ll['advert']['advertable'];
+              var price =
+                  ll['advert']['advertable_type'] == "App\\Models\\purchase"
+                      ? a['total_price']
+                      : a['price_per_day'];
               return Column(
                 children: [
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
-                      image: const DecorationImage(
-                        fit: BoxFit.cover,
-                        image: AssetImage(
-                          'assets/images/img_1.png',
-                        ),
-                      ),
+                      image: BlocProvider.of<PropertyImageCubit>(context).image==null || image.isEmpty
+                          ? const DecorationImage(
+                              fit: BoxFit.cover,
+                              image: AssetImage(
+                                'assets/images/img_1.png',
+                              ),
+                            )
+                          : DecorationImage(
+                              fit: BoxFit.cover,
+                              image: NetworkImage(
+                                '${Api.apiServer.substring(0, 23)}/${image[0]['imageData'].substring(63)}',
+                              ),
+                            ),
                     ),
                     child: Column(
                       children: [
@@ -98,18 +161,31 @@ class _PropertyDetailsViewBodyState extends State<PropertyDetailsViewBody> {
                                 ),
                                 Row(
                                   children: [
-                                    IconButton(
-                                      icon: Icon(
-                                        fav
-                                            ? Icons.favorite
-                                            : Icons.favorite_border,
-                                        color: Colors.red,
-                                        size: 28,
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          fav = !fav;
-                                        });
+                                    BlocBuilder<FavoriteCubit, FavoriteState>(
+                                      builder: (context, state) {
+                                        return IconButton(
+                                          icon: Icon(
+                                            fav
+                                                ? Icons.favorite
+                                                : Icons.favorite_border,
+                                            color: Colors.red,
+                                            size: 28,
+                                          ),
+                                          onPressed: () async {
+                                            if (!fav) {
+                                              await BlocProvider.of<
+                                                      FavoriteCubit>(context)
+                                                  .addFav(aId);
+                                            } else {
+                                              await BlocProvider.of<
+                                                      FavoriteCubit>(context)
+                                                  .delFav(aId);
+                                            }
+                                            setState(() {
+                                              fav = !fav;
+                                            });
+                                          },
+                                        );
                                       },
                                     ),
                                     IconButton(
@@ -164,7 +240,7 @@ class _PropertyDetailsViewBodyState extends State<PropertyDetailsViewBody> {
                                                           await BlocProvider.of<
                                                                       ReportAdvertCubit>(
                                                                   context)
-                                                              .pro(id, m.text);
+                                                              .pro(aId, m.text);
                                                           if (state.status ==
                                                               ReportAdvertStatus
                                                                   .success) {
@@ -243,12 +319,7 @@ class _PropertyDetailsViewBodyState extends State<PropertyDetailsViewBody> {
                               Align(
                                 alignment: Alignment.topLeft,
                                 child: Text(
-                                  ll['property']['building_name'] +
-                                      ' , ' +
-                                      BlocProvider.of<AllPropertyCubit>(context)
-                                                  .category?[
-                                              ll['property']['category_id'] - 1]
-                                          ['type'],
+                                  ll['building_name'],
                                   style: Style.textStyle32
                                       .copyWith(color: Color1.white),
                                 ),
@@ -259,7 +330,8 @@ class _PropertyDetailsViewBodyState extends State<PropertyDetailsViewBody> {
                               Align(
                                 alignment: Alignment.topLeft,
                                 child: Text(
-                                  '${ll['property']['location_id']}, ${ll['property']['space']} m',
+                                  '${ll['location']['country']} , ${ll['location']['city']},\n${ll['location']['neighborhood']},${ll['location']['street']}'
+                                  '\nspace : ${ll['space']} m²',
                                   style: Style.textStyle18
                                       .copyWith(color: Color1.white),
                                 ),
@@ -270,7 +342,7 @@ class _PropertyDetailsViewBodyState extends State<PropertyDetailsViewBody> {
                               Align(
                                 alignment: Alignment.topLeft,
                                 child: Text(
-                                  ll['property']['description'],
+                                  ll['description'],
                                   style: Style.textStyle18
                                       .copyWith(color: Color1.white),
                                 ),
@@ -284,12 +356,12 @@ class _PropertyDetailsViewBodyState extends State<PropertyDetailsViewBody> {
                                 children: [
                                   PropertyDescription(
                                     text: 'bedrooms',
-                                    number: ll['property']['room_count'],
+                                    number: ll['room_count'],
                                     icon: Icons.bed,
                                   ),
                                   PropertyDescription(
                                     text: 'bathrooms',
-                                    number: ll['property']['bath_count'],
+                                    number: ll['bath_count'],
                                     icon: Icons.bathroom,
                                   ),
                                 ],
@@ -303,12 +375,12 @@ class _PropertyDetailsViewBodyState extends State<PropertyDetailsViewBody> {
                                 children: [
                                   PropertyDescription(
                                     text: 'floor count',
-                                    number: ll['property']['floor_count'],
+                                    number: ll['floor_count'],
                                     icon: Icons.house,
                                   ),
                                   PropertyDescription(
                                     text: 'floor number',
-                                    number: ll['property']['floor_number'],
+                                    number: ll['floor_number'],
                                     icon: Icons.numbers,
                                   ),
                                 ],
@@ -316,210 +388,298 @@ class _PropertyDetailsViewBodyState extends State<PropertyDetailsViewBody> {
                               const SizedBox(
                                 height: 5,
                               ),
-                              sec.isNotEmpty
-                                  ? Builder(builder: (context) {
-                                      var ll = [];
-                                      if (sec[0]['guard'] == 1) {
-                                        ll.add('guard');
-                                      }
-                                      if (sec[0]['cameras'] == 1) {
-                                        ll.add('cameras');
-                                      }
-                                      if (sec[0]['fire_alert'] == 1) {
-                                        ll.add('fire alert');
-                                      }
-                                      if (sec[0]['earth_quake'] == 1) {
-                                        ll.add('earthquake');
-                                      }
-                                      return ll.isNotEmpty
-                                          ? SizedBox(
-                                              height: 75,
-                                              child: ListView.builder(
-                                                physics:
-                                                    const BouncingScrollPhysics(),
-                                                itemCount: ll.length,
-                                                shrinkWrap: true,
-                                                scrollDirection:
-                                                    Axis.horizontal,
-                                                itemBuilder: (context, index) {
-                                                  return PropertyDescription(
-                                                    text: ll[index],
-                                                    number: 0,
-                                                    icon: Icons.house,
-                                                  );
-                                                },
-                                              ),
-                                            )
-                                          : Container();
-                                    })
-                                  : Container(),
-                              sec.isNotEmpty
-                                  ? const SizedBox(
-                                      height: 10,
+                              sec != null
+                                  ? Column(
+                                      children: [
+                                        sec.isNotEmpty
+                                            ? Builder(builder: (context) {
+                                                var ll = [];
+                                                if (sec['guard'] == 1) {
+                                                  ll.add('guard');
+                                                }
+                                                if (sec['cameras'] == 1) {
+                                                  ll.add('cameras');
+                                                }
+                                                if (sec['fire_alert'] == 1) {
+                                                  ll.add('fire alert');
+                                                }
+                                                if (sec['earth_quake'] == 1) {
+                                                  ll.add('earthquake');
+                                                }
+                                                return ll.isNotEmpty
+                                                    ? SizedBox(
+                                                        height: 75,
+                                                        child: ListView.builder(
+                                                          physics:
+                                                              const BouncingScrollPhysics(),
+                                                          itemCount: ll.length,
+                                                          shrinkWrap: true,
+                                                          scrollDirection:
+                                                              Axis.horizontal,
+                                                          itemBuilder:
+                                                              (context, index) {
+                                                            return PropertyDescription(
+                                                              text: ll[index],
+                                                              number: 0,
+                                                              icon: Icons.house,
+                                                            );
+                                                          },
+                                                        ),
+                                                      )
+                                                    : Container();
+                                              })
+                                            : Container(),
+                                        sec.isNotEmpty
+                                            ? const SizedBox(
+                                                height: 10,
+                                              )
+                                            : Container(),
+                                      ],
                                     )
                                   : Container(),
-                              lux.isNotEmpty
-                                  ? Builder(builder: (context) {
-                                      var ll = [];
-                                      if (lux[0]['pool'] == 1) {
-                                        ll.add('pool');
-                                      }
-                                      if (lux[0]['garden'] == 1) {
-                                        ll.add('garden');
-                                      }
-                                      if (lux[0]['view_on_sea'] == 1) {
-                                        ll.add('view on sea');
-                                      }
-                                      return ll.isNotEmpty
-                                          ? SizedBox(
-                                              height: 75,
-                                              child: ListView.builder(
-                                                physics:
-                                                    const BouncingScrollPhysics(),
-                                                itemCount: ll.length,
-                                                shrinkWrap: true,
-                                                scrollDirection:
-                                                    Axis.horizontal,
-                                                itemBuilder: (context, index) {
-                                                  return PropertyDescription(
-                                                    text: ll[index],
-                                                    number: 0,
-                                                    icon: Icons.house,
-                                                  );
-                                                },
-                                              ),
-                                            )
-                                          : Container();
-                                    })
-                                  : Container(),
-                              lux.isNotEmpty
-                                  ? const SizedBox(
-                                      height: 10,
+                              lux != null
+                                  ? Column(
+                                      children: [
+                                        lux.isNotEmpty
+                                            ? Builder(builder: (context) {
+                                                var ll = [];
+                                                if (lux['pool'] == 1) {
+                                                  ll.add('pool');
+                                                }
+                                                if (lux['garden'] == 1) {
+                                                  ll.add('garden');
+                                                }
+                                                if (lux['view_on_sea'] == 1) {
+                                                  ll.add('view on sea');
+                                                }
+                                                return ll.isNotEmpty
+                                                    ? SizedBox(
+                                                        height: 75,
+                                                        child: ListView.builder(
+                                                          physics:
+                                                              const BouncingScrollPhysics(),
+                                                          itemCount: ll.length,
+                                                          shrinkWrap: true,
+                                                          scrollDirection:
+                                                              Axis.horizontal,
+                                                          itemBuilder:
+                                                              (context, index) {
+                                                            return PropertyDescription(
+                                                              text: ll[index],
+                                                              number: 0,
+                                                              icon: Icons.house,
+                                                            );
+                                                          },
+                                                        ),
+                                                      )
+                                                    : Container();
+                                              })
+                                            : Container(),
+                                        lux.isNotEmpty
+                                            ? const SizedBox(
+                                                height: 10,
+                                              )
+                                            : Container(),
+                                      ],
                                     )
                                   : Container(),
-                              sup.isNotEmpty
-                                  ? Builder(builder: (context) {
-                                      var ll = [];
-                                      if (sup[0]['solar_power'] == 1) {
-                                        ll.add('solar power');
-                                      }
-                                      if (sup[0]['internet_access'] == 1) {
-                                        ll.add('internet access');
-                                      }
-                                      if (sup[0]['land_line'] == 1) {
-                                        ll.add('land line');
-                                      }
-                                      if (sup[0]['Main_street_access'] == 1) {
-                                        ll.add('Main street access');
-                                      }
-                                      if (sup[0]['garage'] == 1) {
-                                        ll.add('garage');
-                                      }
-                                      return ll.isNotEmpty
-                                          ? SizedBox(
-                                              height: 75,
-                                              child: ListView.builder(
-                                                physics:
-                                                    const BouncingScrollPhysics(),
-                                                itemCount: ll.length,
-                                                shrinkWrap: true,
-                                                scrollDirection:
-                                                    Axis.horizontal,
-                                                itemBuilder: (context, index) {
-                                                  return PropertyDescription(
-                                                    text: ll[index],
-                                                    number: 0,
-                                                    icon: Icons.house,
-                                                  );
-                                                },
-                                              ),
-                                            )
-                                          : Container();
-                                    })
-                                  : Container(),
-                              sup.isNotEmpty
-                                  ? const SizedBox(
-                                      height: 10,
+                              sup != null
+                                  ? Column(
+                                      children: [
+                                        sup.isNotEmpty
+                                            ? Builder(builder: (context) {
+                                                var ll = [];
+                                                if (sup['solar_power'] == 1) {
+                                                  ll.add('solar power');
+                                                }
+                                                if (sup['internet_access'] ==
+                                                    1) {
+                                                  ll.add('internet access');
+                                                }
+                                                if (sup['elevator'] == 1) {
+                                                  ll.add('elevator');
+                                                }
+                                                if (sup['land_line'] == 1) {
+                                                  ll.add('land line');
+                                                }
+                                                if (sup['Main_street_access'] ==
+                                                    1) {
+                                                  ll.add('Main street access');
+                                                }
+                                                if (sup['garage'] == 1) {
+                                                  ll.add('garage');
+                                                }
+                                                return ll.isNotEmpty
+                                                    ? SizedBox(
+                                                        height: 75,
+                                                        child: ListView.builder(
+                                                          physics:
+                                                              const BouncingScrollPhysics(),
+                                                          itemCount: ll.length,
+                                                          shrinkWrap: true,
+                                                          scrollDirection:
+                                                              Axis.horizontal,
+                                                          itemBuilder:
+                                                              (context, index) {
+                                                            return PropertyDescription(
+                                                              text: ll[index],
+                                                              number: 0,
+                                                              icon: Icons.house,
+                                                            );
+                                                          },
+                                                        ),
+                                                      )
+                                                    : Container();
+                                              })
+                                            : Container(),
+                                        sup.isNotEmpty
+                                            ? const SizedBox(
+                                                height: 10,
+                                              )
+                                            : Container(),
+                                      ],
                                     )
                                   : Container(),
-                              ind.isNotEmpty
-                                  ? Builder(builder: (context) {
-                                      var ll = [];
-                                      if (ind[0]['isolation'] == 1) {
-                                        ll.add('isolation');
-                                      }
-                                      if (ind[0]['roden_control'] == 1) {
-                                        ll.add('rodent control');
-                                      }
-                                      if (ind[0]['truck_accessible'] == 1) {
-                                        ll.add('truck accessible');
-                                      }
-                                      return ll.isNotEmpty
-                                          ? SizedBox(
-                                              height: 75,
-                                              child: ListView.builder(
-                                                physics:
-                                                    const BouncingScrollPhysics(),
-                                                itemCount: ll.length,
-                                                shrinkWrap: true,
-                                                scrollDirection:
-                                                    Axis.horizontal,
-                                                itemBuilder: (context, index) {
-                                                  return PropertyDescription(
-                                                    text: ll[index],
-                                                    number: 0,
-                                                    icon: Icons.house,
-                                                  );
-                                                },
-                                              ),
-                                            )
-                                          : Container();
-                                    })
-                                  : Container(),
-                              ind.isNotEmpty
-                                  ? const SizedBox(
-                                      height: 10,
+                              ind != null
+                                  ? Column(
+                                      children: [
+                                        ind.isNotEmpty
+                                            ? Builder(builder: (context) {
+                                                var ll = [];
+                                                if (ind['isolation'] == 1) {
+                                                  ll.add('isolation');
+                                                }
+                                                if (ind['roden_control'] == 1) {
+                                                  ll.add('rodent control');
+                                                }
+                                                if (ind['truck_accessible'] ==
+                                                    1) {
+                                                  ll.add('truck accessible');
+                                                }
+                                                return ll.isNotEmpty
+                                                    ? SizedBox(
+                                                        height: 75,
+                                                        child: ListView.builder(
+                                                          physics:
+                                                              const BouncingScrollPhysics(),
+                                                          itemCount: ll.length,
+                                                          shrinkWrap: true,
+                                                          scrollDirection:
+                                                              Axis.horizontal,
+                                                          itemBuilder:
+                                                              (context, index) {
+                                                            return PropertyDescription(
+                                                              text: ll[index],
+                                                              number: 0,
+                                                              icon: Icons.house,
+                                                            );
+                                                          },
+                                                        ),
+                                                      )
+                                                    : Container();
+                                              })
+                                            : Container(),
+                                        ind.isNotEmpty
+                                            ? const SizedBox(
+                                                height: 10,
+                                              )
+                                            : Container(),
+                                      ],
                                     )
                                   : Container(),
-                              heat.isNotEmpty
-                                  ? Builder(builder: (context) {
-                                      var ll = [];
-                                      if (heat[0]['air_condtioning'] == 1) {
-                                        ll.add('air conditioning');
-                                      }
-                                      if (heat[0]['fireplace'] == 1) {
-                                        ll.add('fireplace');
-                                      }
-                                      if (heat[0]['ventilation_system'] == 1) {
-                                        ll.add('ventilation system');
-                                      }
-                                      return ll.isNotEmpty
-                                          ? SizedBox(
-                                              height: 75,
-                                              child: ListView.builder(
-                                                physics:
-                                                    const BouncingScrollPhysics(),
-                                                itemCount: ll.length,
-                                                shrinkWrap: true,
-                                                scrollDirection:
-                                                    Axis.horizontal,
-                                                itemBuilder: (context, index) {
-                                                  return PropertyDescription(
-                                                    text: ll[index],
-                                                    number: 0,
-                                                    icon: Icons.house,
-                                                  );
-                                                },
-                                              ),
-                                            )
-                                          : Container();
-                                    })
-                                  : Container(),
-                              heat.isNotEmpty
-                                  ? const SizedBox(
-                                      height: 10,
+                              heat != null
+                                  ? Column(
+                                      children: [
+                                        heat.isNotEmpty
+                                            ? Builder(builder: (context) {
+                                                var ll = [];
+                                                if (heat['air_condtioning'] ==
+                                                    1) {
+                                                  ll.add('air conditioning');
+                                                }
+                                                if (heat['fireplace'] == 1) {
+                                                  ll.add('fireplace');
+                                                }
+                                                if (heat[
+                                                        'ventilation_system'] ==
+                                                    1) {
+                                                  ll.add('ventilation system');
+                                                }
+                                                return ll.isNotEmpty
+                                                    ? SizedBox(
+                                                        height: 75,
+                                                        child: ListView.builder(
+                                                          physics:
+                                                              const BouncingScrollPhysics(),
+                                                          itemCount: ll.length,
+                                                          shrinkWrap: true,
+                                                          scrollDirection:
+                                                              Axis.horizontal,
+                                                          itemBuilder:
+                                                              (context, index) {
+                                                            return PropertyDescription(
+                                                              text: ll[index],
+                                                              number: 0,
+                                                              icon: Icons.house,
+                                                            );
+                                                          },
+                                                        ),
+                                                      )
+                                                    : Container();
+                                              })
+                                            : Container(),
+                                        heat.isNotEmpty
+                                            ? const SizedBox(
+                                                height: 10,
+                                              )
+                                            : Container(),
+                                      ],
                                     )
                                   : Container(),
+                              ElevatedButton(
+                                  onPressed: () {
+                                    showDialog(context: context, builder: (context) {
+                                      return AlertDialog(
+                                        title: Text('images'),
+                                        content: SizedBox(
+                                          width: 300.0,
+                                          child: image.isEmpty
+                                              ? const Center(child: Text('Sorry nothing selected!!'))
+                                              : GridView.builder(
+                                            shrinkWrap: true,
+                                            itemCount: image.length,
+                                            gridDelegate:
+                                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                                crossAxisCount: 3
+                                              // Horizontally only 3 images will show
+                                            ),
+                                            itemBuilder: (BuildContext context, int index) {
+                                              // TO show selected file
+                                              return Center(
+                                                  child:  Image.network('${Api.apiServer.substring(0, 23)}/${image[index]['imageData'].substring(63)}'));
+                                              // If you are making the web app then you have to
+                                              // use image provider as network image or in
+                                              // android or iOS it will as file only
+                                            },
+                                          ),
+                                        ),
+                                      );
+                                    },);
+                                  },
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(
+                                        Color1.primaryColor),
+                                    padding: MaterialStateProperty.all(
+                                        const EdgeInsets.all(15)),
+                                    shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                        RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(18.0),
+                                        )),
+                                  ),
+                                  child: const Text(
+                                    'show Image',
+                                  )),
                               Align(
                                 alignment: Alignment.topLeft,
                                 child: Text(
@@ -532,10 +692,10 @@ class _PropertyDetailsViewBodyState extends State<PropertyDetailsViewBody> {
                                 height: 5,
                               ),
                               PropertyOwner(
-                                id: po[0]['id'],
-                                name: po[0]['name'],
-                                email: po[0]['email'],
-                                phone: po[0]['phone_number']?? 'No Phone Number',
+                                id: po['id'],
+                                name: po['name'],
+                                email: po['email'],
+                                phone: po['phone_number'] ?? 'No Phone Number',
                                 f: () {
                                   showDialog(
                                     context: context,
@@ -606,10 +766,11 @@ class _PropertyDetailsViewBodyState extends State<PropertyDetailsViewBody> {
                                                                     () async {
                                                                   if (m.text
                                                                       .isNotEmpty) {
-                                                                    await BlocProvider.of<ReportAdvertCubit>(context).pro(
-                                                                        po[0][
-                                                                            'id'],
-                                                                        m.text);
+                                                                    await BlocProvider.of<ReportAdvertCubit>(
+                                                                            context)
+                                                                        .proU(
+                                                                            po['id'],
+                                                                            m.text);
                                                                     if (state
                                                                             .status ==
                                                                         ReportAdvertStatus
@@ -697,7 +858,7 @@ class _PropertyDetailsViewBodyState extends State<PropertyDetailsViewBody> {
                                                       .push(MaterialPageRoute(
                                                     builder: (context) =>
                                                         ProfileView(
-                                                            id: po[0]['id'],
+                                                            id: po['id'],
                                                             home: false),
                                                   ));
                                                 },
@@ -725,6 +886,7 @@ class _PropertyDetailsViewBodyState extends State<PropertyDetailsViewBody> {
                                     },
                                   );
                                 },
+                                color: Colors.white24,
                               ),
                               const SizedBox(height: 30),
                               Container(
@@ -760,28 +922,35 @@ class _PropertyDetailsViewBodyState extends State<PropertyDetailsViewBody> {
                                                 Navigator.of(context).pop();
                                               },
                                             ),
-                                            BlocBuilder<RequestCubit, RequestState>(
+                                            BlocBuilder<RequestCubit,
+                                                RequestState>(
                                               builder: (context, state) {
                                                 return TextButton(
                                                   child: Text(
                                                     'Approve',
-                                                    style: Style.textStyle16.copyWith(
+                                                    style: Style.textStyle16
+                                                        .copyWith(
                                                       fontSize: 14,
-                                                      color: Color1.primaryColor.withOpacity(.7),
+                                                      color: Color1.primaryColor
+                                                          .withOpacity(.7),
                                                     ),
                                                   ),
                                                   onPressed: () async {
                                                     if (m.text.isNotEmpty) {
-                                                      await BlocProvider.of<RequestCubit>(context).sendRequest(id, m.text);
-                                                      if (state.status ==
-                                                          RequestStatus.success) {
-                                                        Navigator.of(context).pop();
-                                                        ScaffoldMessenger.of(context).showSnackBar(
-                                                          const SnackBar(
-                                                              content: Text(
-                                                                  'request done successfully')),
-                                                        );
-                                                      }
+                                                      await BlocProvider.of<
+                                                                  RequestCubit>(
+                                                              context)
+                                                          .sendRequest(
+                                                              aId, m.text);
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        const SnackBar(
+                                                            content: Text(
+                                                                'request done successfully')),
+                                                      );
                                                     } else {
                                                       ScaffoldMessenger.of(
                                                               context)
@@ -817,12 +986,13 @@ class _PropertyDetailsViewBodyState extends State<PropertyDetailsViewBody> {
                                       },
                                     );
                                   },
-                                  child: Center(
+                                  child: Container(
+                                      alignment: Alignment.center,
                                       child: Text(
-                                    'price',
-                                    style: Style.textStyle20
-                                        .copyWith(color: Color1.white),
-                                  )),
+                                        '$price \$',
+                                        style: Style.textStyle20
+                                            .copyWith(color: Color1.white),
+                                      )),
                                 ),
                               ),
                               const SizedBox(

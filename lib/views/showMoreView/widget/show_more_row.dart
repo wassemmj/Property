@@ -23,7 +23,7 @@ class ShowMoreRow extends StatelessWidget {
           color: color,
         ),
         SizedBox(width: (width/137).floorToDouble()),
-        ShowMoreText1(text: text, style: Style.textStyle16),
+        ShowMoreText1(text: text, style: text.length>16? Style.textStyle16.copyWith(fontSize: 12):Style.textStyle16),
       ],
     );
   }

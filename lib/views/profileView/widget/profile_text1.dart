@@ -16,14 +16,19 @@ class ProfileText1 extends StatelessWidget {
       children: [
         Text(
           text,
-          style: Style.textStyle22.copyWith(
+          style: Style.textStyle18.copyWith(
               fontWeight: FontWeight.w400, color: Color1.primaryColor),
         ),
         SizedBox(width: MediaQuery.of(context).size.width / 27.4),
         Text(
           ans,
-          style: Style.textStyle18.copyWith(
+          style: !(ans.length>65)? Style.textStyle18.copyWith(
             fontWeight: FontWeight.w300,
+            color: Color1.black,
+            fontSize:  15
+          ):Style.textStyle18.copyWith(
+            fontWeight: FontWeight.w300,
+            fontSize: 18,
             color: Color1.black,
           ),
         ),

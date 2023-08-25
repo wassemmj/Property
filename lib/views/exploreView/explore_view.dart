@@ -23,11 +23,14 @@ class _ExploreViewState extends State<ExploreView> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       await BlocProvider.of<AllPropertyCubit>(context, listen: false).cat();
+      List? q = BlocProvider.of<AllPropertyCubit>(context).property;
+      qq = q?.where((element) => element['category']['type'] == BlocProvider.of<AllPropertyCubit>(context).types?[0]).toList();
       // await BlocProvider.of<AllPropertyCubit>(context, listen: false).type();
     });
     super.initState();
   }
 
+  List? qq = [];
   @override
   Widget build(BuildContext context) {
     int height = MediaQuery.of(context).size.height.toInt();
@@ -62,25 +65,38 @@ class _ExploreViewState extends State<ExploreView> {
               strokeWidth: 1,
             ));
           }
+          var cat = BlocProvider.of<AllPropertyCubit>(context)
+              .category;
+          List<String> catName = [];
+          for(int i =0 ;i<cat!.length;i++) {
+            if(catName.contains(cat[i]['name'])) {
+
+            }
+            else {
+              catName.add(cat[i]['name']);
+            }
+          }
           return Column(
             children: [
               SizedBox(
                 height: (height / 17.3).floorToDouble(),
                 child: ListView.builder(
-                  itemCount: BlocProvider.of<AllPropertyCubit>(context)
-                      .category
-                      ?.length,
+                  itemCount: catName.length,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) {
+                    List? q = BlocProvider.of<AllPropertyCubit>(context).property;
+                    qq = q?.where((element) => element['category']['type'] == BlocProvider.of<AllPropertyCubit>(context).types?[0]).toList();
                     return InkWell(
                       onTap: () async {
                         setState(() {
                           indexList = index;
+                          seList = 0;
                         });
                         await BlocProvider.of<AllPropertyCubit>(context,
                                 listen: false)
-                            .type(BlocProvider.of<AllPropertyCubit>(context)
-                                .category![index]['name']);
+                            .cattt(catName[index]);
+                        qq = q?.where((element) => element['category']['type'] == BlocProvider.of<AllPropertyCubit>(context).types?[0]).toList();
+
                       },
                       child: Container(
                         padding: const EdgeInsets.all(15),
@@ -96,8 +112,7 @@ class _ExploreViewState extends State<ExploreView> {
                           ),
                         ),
                         child: Text(
-                          BlocProvider.of<AllPropertyCubit>(context)
-                              .category![index]["name"],
+                          catName[index],
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 16,
@@ -119,11 +134,14 @@ class _ExploreViewState extends State<ExploreView> {
                       ?.length,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) {
+                    List? q = BlocProvider.of<AllPropertyCubit>(context).property;
+                    qq = q?.where((element) => element['category']['type'] == BlocProvider.of<AllPropertyCubit>(context).types?[seList]).toList();
                     return InkWell(
                       onTap: () {
                         setState(() {
                           seList = index;
                         });
+                        qq = q?.where((element) => element['category']['type'] == BlocProvider.of<AllPropertyCubit>(context).types?[seList]).toList();
                       },
                       child: Container(
                         padding: const EdgeInsets.all(15),
@@ -140,7 +158,7 @@ class _ExploreViewState extends State<ExploreView> {
                         ),
                         child: Text(
                           BlocProvider.of<AllPropertyCubit>(context)
-                              .types?[index]['type'],
+                              .types?[index],
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 16,
@@ -157,26 +175,31 @@ class _ExploreViewState extends State<ExploreView> {
               ),
               Expanded(
                 child: ListView.builder(
-                  itemCount: BlocProvider.of<AllPropertyCubit>(context)
-                      .property
-                      ?.length,
+                  itemCount: qq?.length,
                   shrinkWrap: true,
                   scrollDirection: Axis.vertical,
                   itemBuilder: (context, index) {
-                    var ll = BlocProvider.of<AllPropertyCubit>(context)
-                        .property?[index]['property'];
-                    return Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ShowMoreCard(
-                            location: '${ll['location_id']??0}',
-                            id: ll['id']??0,
-                          ),
-                        ],
-                      ),
-                    );
+                    if(qq!=null||qq!.isNotEmpty) {
+                      var ll = qq?[index];
+                      var p = ll['advert']['advertable'];
+                      return Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ShowMoreCard(
+                              location: '${ll['location']['country']} , ${ll['location']['city']} ',
+                              id: ll['id']??0,
+                              price: ll['advert']['advertable_type']=='App\\Models\\Rent'? '${p['price_per_day']} per day':'${p['total_price']} ',
+                              rent: ll['advert']['advertable_type']=='App\\Models\\Rent'? true:false,
+                              space: '${ll['space']} M',
+                              image: ll['image']==null ? ll['image'] : ll['image'][0],
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
                   },
                 ),
               ),

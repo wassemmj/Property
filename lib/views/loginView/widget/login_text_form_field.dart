@@ -47,11 +47,18 @@ class LoginTextFormField extends StatelessWidget {
                 onPressed: bb,
               )
             : null,
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: Color1.primaryColor
+          )
+        ),
       ),
+
       keyboardType: keyboardType,
       controller: controller,
       obscureText: obscure,
       validator: valid,
+      cursorColor: Color1.primaryColor,
     );
   }
 }

@@ -32,6 +32,7 @@ class ReportAdvertApi {
 
   static Future reportU(int id,String m) async {
     try {
+      print('start api');
       var response = await http.post(
         Uri.parse('${Api.apiServer}/user/reportUser'),
         headers: {
@@ -43,6 +44,7 @@ class ReportAdvertApi {
           'details' : m,
         },
       );
+      print(response.body);
       if(response.statusCode == 200) {
         if(response.body.isEmpty) {
           throw Exception('empty');
