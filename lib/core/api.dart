@@ -1,3 +1,3 @@
 class Api {
-  static const apiServer = 'http://192.168.5.8:8000/api';
+  static const apiServer = 'http://192.168.1.108:8000/api';
 }

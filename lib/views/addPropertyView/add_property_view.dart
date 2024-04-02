@@ -643,8 +643,7 @@ class _AddPropertyViewState extends State<AddPropertyView> {
                           ),
                           textButtonTheme: TextButtonThemeData(
                             style: TextButton.styleFrom(
-                              primary:
-                              Color1.primaryColor, // button text color
+                              foregroundColor: Color1.primaryColor, // button text color
                             ),
                           ),
                         ),
